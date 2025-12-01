@@ -1,0 +1,11 @@
+{
+    "actorSpecification": 1,
+    "name": "winepot-wcc-wrapper",
+    "title": "Winepot WCC Wrapper",
+    "description": "Reads winery-pages-queue, groups by winery, calls Website Content Crawler in batches and stores results.",
+    "version": "0.1",
+    "meta": {
+        "templateId": "js-node"
+    },
+    "input": "./input-schema.json"
+}
