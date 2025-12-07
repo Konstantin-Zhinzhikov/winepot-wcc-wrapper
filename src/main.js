@@ -38,6 +38,11 @@ const requestQueue = await Actor.openRequestQueue(crawlQueueName);
 const outputKv = await Actor.openKeyValueStore(crawlResultsKvStoreName);
 const azureQueue = await Actor.openRequestQueue(azureQueueName);
 
+function getPageKey(wineryId, url) {
+    const sanitizedUrl = url.replace(/[^a-zA-Z0-9\-_.()']/g, '-');
+    return `${wineryId}_${sanitizedUrl}`;
+}
+
 console.log(`Wrapper started.`);
 try {
     let groupedRequests = {};
@@ -49,10 +54,11 @@ try {
         }
 
         if (!groupedRequests[wineryId]) {
-            groupedRequests[wineryId] = [];
+            groupedRequests[wineryId] = {};
         }
 
-        groupedRequests[wineryId].push(req);
+        const key = getPageKey(wineryId, req.url);
+        groupedRequests[wineryId][key] = req;
     }
 
     if (Object.keys(groupedRequests).length === 0) {
@@ -60,27 +66,33 @@ try {
         await Actor.exit();
     }
 
-    for (const [wineryId, requests] of Object.entries(groupedRequests)) {
-        console.log(`Processing winery "${wineryId}" with ${requests.length} URLs.`);
+    for (const [wineryId, requestsObj] of Object.entries(groupedRequests)) {
+        const numUrls = Object.keys(requestsObj).length;
+        console.log(`Processing winery "${wineryId}" with ${numUrls} URLs.`);
 
         try {
-            const requestsForWcc = [];
-            for (const r of requests) {
-                const reason = r.userData?.reason;
-                if (reason === 'removed') {
-                    await azureQueue.addRequest({
-                        url: r.url,
-                        userData: r.userData
-                    });
-                    console.log(`Page [${r.url}] marked as removed. Sent to azureQueue.`);
-                } else {
-                    requestsForWcc.push(r);
+            const requestsToParse = [];
+            for (const request of Object.values(requestsObj)) {
+                if (request.userData?.reason !== 'removed') {
+                    requestsToParse.push(request);
+                    continue;
                 }
+
+                await azureQueue.addRequest({
+                    url: request.url,
+                    userData: {
+                        wineryId: wineryId,
+                        parsedResultKey: getPageKey(request.wineryId, request.url),
+                        action: "delete"
+                    }
+                });
+                await requestQueue.markRequestHandled(request);
+                console.log(`Page [${request.url}] marked as removed. Sent to azureQueue with action = delete.`);
             }
 
-            if (requestsForWcc.length === 0) {
+            if (requestsToParse.length === 0) {
                 console.log(`No pages to parse with WCC for winery "${wineryId}".`);
-                for (const r of requests) {
+                for (const r of Object.values(requestsObj)) {
                     try {
                         await requestQueue.markRequestHandled(r);
                     } catch (mErr) {
@@ -90,7 +102,7 @@ try {
                 continue;
             }
 
-            const startUrls = requestsForWcc.map(r => ({url: r.url}));
+            const startUrls = requestsToParse.map(r => ({url: r.url}));
             const wccInput = {
                 startUrls: startUrls,
                 crawlerType: 'playwright:adaptive',
@@ -111,9 +123,9 @@ try {
                         wccInput,
                         {
                             memory: 4096,
-                            timeout: 2 * 60 * 60
+                            timeout: 2 * 60 * 60 // seconds
                         }
-                )
+                );
             } catch (err) {
                 console.error(`WCC call failed for winery ${wineryId}`, err);
                 throw new Error(`WCC call failed for winery ${wineryId}`);
@@ -126,34 +138,40 @@ try {
 
             const ds = await Actor.openDataset(wccDatasetId);
             const wccData = await ds.getData();
-            const enriched = wccData.items
-                    .flat()
-                    .map(i => ({
-                        url: i.url,
-                        wineryId: wineryId,
-                        markdown: i.markdown,
-                        title: i.metadata?.title,
-                        indexedAt: new Date().toISOString(),
-                        sourceWccRunId: wccRun.id,
-                        reason: requestsForWcc.find(r => r.url === i.url)?.userData?.reason
-                    }));
+            const rawParsedItems = (wccData.items || []).flat();
 
-            for (const item of enriched) {
-                const sanitizedUrl = item.url.replace(/[^a-zA-Z0-9\-_.()']/g, '-');
-                const key = `${item.wineryId}_${sanitizedUrl}`;
+            const parsedPages = rawParsedItems.map(i => {
+                const foundReq = requestsToParse.find(r => r.url === i.url);
+                const reason = foundReq?.userData?.reason;
+                return {
+                    url: i.url,
+                    wineryId: wineryId,
+                    markdown: i.markdown,
+                    title: i.metadata?.title,
+                    indexedAt: new Date().toISOString(),
+                    reason: reason
+                };
+            });
+
+            for (const parsedPage of parsedPages) {
+                const key = getPageKey(parsedPage.wineryId, parsedPage.url);
                 try {
-                    await outputKv.setValue(key, item);
+                    await outputKv.setValue(key, parsedPage);
                     await azureQueue.addRequest({
-                        url: item.url,
-                        userData: item
+                        url: parsedPage.url,
+                        userData: {
+                            wineryId: parsedPage.wineryId,
+                            parsedResultKey: key,
+                            action: "mergeOrUpload"
+                        }
                     });
-                    console.log(`Saved and queued page [${item.url}] for winery "${wineryId}" with reason "${item.reason}".`);
+                    console.log(`Saved and queued page [${parsedPage.url}] for winery "${wineryId}" with reason "${parsedPage.reason}".`);
                 } catch (err) {
                     throw new Error(`Failed to write to KV store or azureQueue for key ${key}: ${err.message}`);
                 }
             }
 
-            for (const r of requests) {
+            for (const r of Object.values(requestsToParse)) {
                 try {
                     await requestQueue.markRequestHandled(r);
                 } catch (mErr) {
@@ -161,12 +179,12 @@ try {
                 }
             }
         } catch (err) {
-            console.error("Fatal error: " + err.message)
-            for (const req of requests) {
+            console.error("Fatal error: " + err.message);
+            for (const r of Object.values(requestsObj)) {
                 try {
-                    await requestQueue.reclaimRequest(req);
+                    await requestQueue.reclaimRequest(r);
                 } catch (recErr) {
-                    console.warn('Failed to reclaim request', req.url, recErr);
+                    console.warn('Failed to reclaim request', r.url, recErr);
                 }
             }
         }
