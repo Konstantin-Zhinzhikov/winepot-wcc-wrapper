@@ -31,7 +31,7 @@ jobs:
               env:
                   APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
               run: |
-                  node ../../scripts/release-actor.js \
+                  node ../release-actor.js \
                     --actor-id winespot-sitemap-scanner \
                     --cron "0 5 * * 1" \
                     --config-kv winespot-main-config
@@ -41,7 +41,7 @@ jobs:
               env:
                   APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
               run: |
-                  node ../../scripts/release-actor.js \
+                  node ../release-actor.js \
                     --actor-id winepot-wcc-wrapper \
                     --cron "0 5 * * 2" \
                     --config-kv winespot-main-config
@@ -51,7 +51,7 @@ jobs:
               env:
                   APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
               run: |
-                  node ../../scripts/release-actor.js \
+                  node ../release-actor.js \
                     --actor-id azure-index-actor \
                     --cron "0 5 * * 3" \
                     --config-kv winespot-main-config
