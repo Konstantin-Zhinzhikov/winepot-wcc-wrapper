@@ -32,7 +32,6 @@ const client = new ApifyClient({token: APIFY_TOKEN});
         process.exit(1);
     }
 
-    // Получаем объект актера
     const me = await client.user().get();
     const actorName = `${me.username}/${argv.actorId}`;
     const actorObj = await client.actor(actorName).get();
@@ -41,27 +40,17 @@ const client = new ApifyClient({token: APIFY_TOKEN});
         process.exit(1);
     }
 
-    // Формируем scheduleName автоматически
     const scheduleName = `${argv.actorId}-schedule`;
 
-    // Проверяем существующие расписания
     console.log(`Checking if schedule "${scheduleName}" exists...`);
     const schedules = await client.schedules().list({limit: 100});
     const existing = schedules.items.find(s => s.name === scheduleName);
 
     if (existing) {
-        if (existing.cronExpression === argv.cron) {
-            console.log(`Schedule "${scheduleName}" already exists with the same cronExpression. Nothing to update.`);
-            process.exit(0);
-        } else {
-            console.log(`Updating schedule id=${existing.id} cronExpression=${existing.cronExpression} -> ${argv.cron}`);
-            await client.schedule(existing.id).update({cronExpression: argv.cron});
-            console.log(`Schedule "${scheduleName}" updated successfully.`);
-            process.exit(0);
-        }
+        console.log(`Schedule "${scheduleName}" already exists. it will be recreated.`);
+        await client.schedule(existing.id).delete();
     }
 
-    // Создаём новое расписание
     console.log(`Creating schedule "${scheduleName}" for Actor '${actorName}' (ID='${actorObj.id}')`);
     await client.schedules().create({
         name: scheduleName,
