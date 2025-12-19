@@ -1,0 +1,9 @@
+{
+    "wineryId": "tankgaragewinery",
+    "indexName": "winespot-tankgaragewinery-index",
+    "siteUrl": "https://www.tankgaragewinery.com/",
+    "sitemapUrl": "https://www.tankgaragewinery.com/sitemap.xml",
+    "crawlResultsKvName": "tankgarage-crawl-results",
+    "whitelist": [],
+    "blacklist": []
+}

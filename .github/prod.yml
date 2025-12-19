@@ -1,0 +1,38 @@
+name: Prod deploy
+
+on:
+    workflow_dispatch:
+    push:
+        tags:
+            - "*"
+
+jobs:
+    set-apify-secrets:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/setup-node@v4
+                with:
+                    node-version: 20
+
+            -   run: npm install -g apify-cli
+
+            -   name: Set Apify secrets (STAGE)
+                env:
+                    APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_PROD }}
+                    AZURE_TOKEN: ${{ secrets.AZURE_TOKEN_PROD }}
+                run: |
+                    apify secrets add azureToken "$AZURE_TOKEN" --overwrite
+    upload-configs:
+        uses: ./.github/workflows/upload-configs.yml
+        with:
+            env: prod
+        secrets:
+            APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_PROD }}
+
+    release-actors:
+        needs: upload-configs
+        uses: ./.github/workflows/release-actors.yml
+        with:
+            env: prod
+        secrets:
+            APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_PROD }}

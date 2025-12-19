@@ -1,0 +1,14 @@
+{
+    "name": "winespot-config-tools",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "upload": "node upload-all.js"
+    },
+    "dependencies": {
+        "apify-client": "^2.20.0",
+        "dotenv": "^17.2.3",
+        "node-fetch": "^3.3.2",
+        "yargs": "^18.0.0"
+    }
+}

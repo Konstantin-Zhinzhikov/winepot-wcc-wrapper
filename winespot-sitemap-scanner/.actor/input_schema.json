@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Winespot Sitemap Scanner Input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "mainConfigKV": {
+            "type": "string",
+            "title": "Main config KV store",
+            "description": "Name of key-value store with main config.",
+            "editor": "textfield"
+        }
+    },
+    "required": ["mainConfigKV"],
+    "additionalProperties": false
+}

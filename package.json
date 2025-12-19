@@ -1,16 +1,7 @@
 {
-  "name": "winepot-wcc-wrapper",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Wrapper actor that reads request queue, batches URLs per winery, runs Website Content Crawler and stores results.",
-  "main": "src/main.js",
-  "scripts": {
-    "start": "node src/main.js"
-  },
   "dependencies": {
-    "apify": "^3.5.0",
-    "dotenv": "^17.2.3"
-  },
-  "author": "",
-  "license": "ISC"
+    "apify-client": "^2.21.0",
+    "dotenv": "^17.2.3",
+    "yargs": "^18.0.0"
+  }
 }

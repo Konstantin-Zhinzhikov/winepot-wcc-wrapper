@@ -1,0 +1,36 @@
+name: Upload actors configs
+
+on:
+    workflow_call:
+        inputs:
+            env:
+                required: true
+                type: string
+        secrets:
+            APIFY_TOKEN:
+                required: true
+
+jobs:
+    upload-configs:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install deps (actors-config)
+              working-directory: actors-config
+              run: npm ci
+
+            - name: Upload configs
+              working-directory: actors-config
+              env:
+                  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+                  ENV: ${{ inputs.env }}
+              run: |
+                  node upload-all.js

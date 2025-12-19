@@ -1,0 +1,25 @@
+{
+    "wineryId": "scottharveywines",
+    "indexName": "winespot-scottharvey-index",
+    "siteUrl": "https://www.scottharveywines.com/",
+    "sitemapUrl": "https://www.scottharveywines.com/sitemap.xml",
+    "crawlResultsKvName": "scottharveywines-crawl-results",
+    "whitelist": [
+    ],
+    "blacklist": [
+        "/trade-media/",
+        "/sitemap/",
+        "/blog/",
+        "www.scottharveywines.com/profile/"
+    ],
+    "extraPages": [
+        {
+            "url": "https://www.scottharveywines.com/shop",
+            "crawlDepth": 1,
+            "excludeUrlGlobs": [],
+            "includeUrlGlobs": [
+                "https://www.scottharveywines.com/product/**"
+            ]
+        }
+    ]
+}

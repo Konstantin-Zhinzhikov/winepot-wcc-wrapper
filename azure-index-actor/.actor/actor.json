@@ -1,0 +1,12 @@
+{
+	"actorSpecification": 1,
+	"name": "azure-index-actor",
+	"title": "Azure Index Actor",
+	"description": "Azure Index Actor.",
+	"version": "0.0",
+	"buildTag": "latest",
+	"environmentVariables": {
+		"AZURE_SEARCH_API_KEY": "@azureToken"
+	},
+	"input": "./input-schema.json"
+}

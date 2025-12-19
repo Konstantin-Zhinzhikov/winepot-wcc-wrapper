@@ -1,0 +1,43 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "wineryId": {
+            "type": "string",
+            "label": "Winery ID"
+        },
+        "url": {
+            "type": "string",
+            "label": "URL"
+        },
+        "lastModified": {
+            "type": "string",
+            "label": "Last Modified"
+        },
+        "status": {
+            "type": "string",
+            "label": "Status"
+        },
+        "timestamp": {
+            "type": "string",
+            "label": "Scanned At"
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": ["wineryId", "url", "status", "lastModified", "timestamp"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "wineryId": { "label": "Winery ID", "format": "text" },
+                    "url": { "label": "URL", "format": "link" },
+                    "status": { "label": "Status", "format": "text" },
+                    "lastModified": { "label": "Last Modified", "format": "text" },
+                    "timestamp": { "label": "Scanned At", "format": "text" }
+                }
+            }
+        }
+    }
+}

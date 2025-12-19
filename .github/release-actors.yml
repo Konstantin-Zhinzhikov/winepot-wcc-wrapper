@@ -1,0 +1,49 @@
+name: Release Apify actors
+
+on:
+    workflow_call:
+        inputs:
+            env:
+                required: true
+                type: string
+        secrets:
+            APIFY_TOKEN:
+                required: true
+
+jobs:
+    release-actors:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install deps (root)
+              run: npm ci
+
+            # === Actor 1 ===
+            - name: Release winepot-wcc-wrapper
+              working-directory: actors/winepot-wcc-wrapper
+              env:
+                  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+              run: |
+                  node ../../scripts/release-actor.js \
+                    --actor-id winepot-wcc-wrapper \
+                    --cron "30 6 * * 2" \
+                    --config-kv winespot-main-config
+
+            # === Actor 2 ===
+            - name: Release another-actor
+              working-directory: actors/another-actor
+              env:
+                  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+              run: |
+                  node ../../scripts/release-actor.js \
+                    --actor-id another-actor \
+                    --cron "0 5 * * *" \
+                    --config-kv winespot-main-config

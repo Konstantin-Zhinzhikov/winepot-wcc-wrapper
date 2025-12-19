@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Winery Sitemap Scan Output",
+    "type": "object",
+    "actorOutputSchemaVersion": 1,
+    "properties": {
+        "wineryId": {
+            "type": "string",
+            "template": "text"
+        },
+        "url": {
+            "type": "string",
+            "template": "link"
+        },
+        "lastModified": {
+            "type": "string",
+            "template": "text"
+        },
+        "status": {
+            "type": "string",
+            "template": "text"
+        },
+        "timestamp": {
+            "type": "string",
+            "template": "text"
+        }
+    },
+    "required": ["wineryId", "url", "status", "timestamp"]
+}

@@ -1,0 +1,28 @@
+{
+	"name": "azure-index-actor",
+	"version": "0.0.1",
+	"type": "module",
+	"description": "This is a boilerplate of an Apify Actor.",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"@azure/search-documents": "^12.2.0",
+		"apify": "^3.4.2",
+		"apify-client": "^2.20.0",
+		"crawlee": "^3.13.8",
+		"dotenv": "^17.2.3"
+	},
+	"devDependencies": {
+		"@apify/eslint-config": "^1.0.0",
+		"eslint": "^9.29.0",
+		"eslint-config-prettier": "^10.1.5",
+		"prettier": "^3.5.3"
+	},
+	"scripts": {
+		"start": "node ./src/main.js",
+		"release": "node create-or-update-schedule.js"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}

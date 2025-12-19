@@ -1,0 +1,7 @@
+{
+    "wineriesKvStoreName": "winespot-wineries-config",
+    "sitemapSnapshotKvStoreName": "winespot-sitemaps-snapshot",
+    "crawlQueueName": "winespot-crawl-queue",
+    "azureQueueName": "azure-queue",
+    "azureSearchEndpoint": "https://winespotaisearch.search.windows.net/"
+}

@@ -1,0 +1,12 @@
+{
+    "actorSpecification": 1,
+    "name": "winespot-sitemap-scanner",
+    "title": "Winespot Sitemap Scanner",
+    "description": "Scans sitemaps of wineries, filters URLs by whitelist/blacklist, stores snapshot in KV, pushes new/changed URLs to Request Queue, and tracks deleted URLs in Dataset.",
+    "version": "0.1",
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    }
+}

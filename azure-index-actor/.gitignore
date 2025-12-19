@@ -1,0 +1,11 @@
+.env
+
+.DS_Store
+.idea
+.vscode
+.zed
+node_modules
+storage
+
+# Added by Apify CLI
+.venv
