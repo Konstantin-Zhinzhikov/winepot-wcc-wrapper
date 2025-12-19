@@ -6,8 +6,8 @@ import {hideBin} from "yargs/helpers";
 
 const argv = yargs(hideBin(process.argv))
         .options({
-            actorId: {type: "string", describe: "ID of the actor", demandOption: true},
-            configKV: {type: "string", describe: "Name of main config KV store", demandOption: true},
+            "actor-id": {type: "string", describe: "ID of the actor", demandOption: true},
+            "config-kv": {type: "string", describe: "Name of main config KV store", demandOption: true},
             cron: {type: "string", describe: "Cron expression", demandOption: true},
             memory: {type: "number", describe: "Memory for actor run (MB)", default: 4096},
         })
