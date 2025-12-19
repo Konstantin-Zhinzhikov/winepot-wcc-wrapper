@@ -26,24 +26,32 @@ jobs:
             - name: Install deps (root)
               run: npm ci
 
-            # === Actor 1 ===
+            - name: Release winespot-sitemap-scanner
+              working-directory: winespot-sitemap-scanner
+              env:
+                  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+              run: |
+                  node ../../scripts/release-actor.js \
+                    --actor-id winespot-sitemap-scanner \
+                    --cron "0 5 * * 1" \
+                    --config-kv winespot-main-config
+
             - name: Release winepot-wcc-wrapper
-              working-directory: actors/winepot-wcc-wrapper
+              working-directory: winepot-wcc-wrapper
               env:
                   APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
               run: |
                   node ../../scripts/release-actor.js \
                     --actor-id winepot-wcc-wrapper \
-                    --cron "30 6 * * 2" \
+                    --cron "0 5 * * 2" \
                     --config-kv winespot-main-config
 
-            # === Actor 2 ===
-            - name: Release another-actor
-              working-directory: actors/another-actor
+            - name: Release azure-index-actor
+              working-directory: azure-index-actor
               env:
                   APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
               run: |
                   node ../../scripts/release-actor.js \
-                    --actor-id another-actor \
-                    --cron "0 5 * * *" \
+                    --actor-id azure-index-actor \
+                    --cron "0 5 * * 3" \
                     --config-kv winespot-main-config
