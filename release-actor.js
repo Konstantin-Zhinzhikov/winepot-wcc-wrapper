@@ -24,8 +24,8 @@ const client = new ApifyClient({token: APIFY_TOKEN});
 (async () => {
     try {
         console.log(`Logging in and pushing actor ${argv.actorId}`);
-        execSync(`apify login -t ${APIFY_TOKEN}`, {stdio: "inherit"});
-        execSync("apify push", {stdio: "inherit"});
+        execSync(`npx apify-cli login -t ${APIFY_TOKEN}`, { stdio: "inherit" });
+        execSync("npx apify-cli push", { stdio: "inherit" });
         console.log("Actor successfully pushed.");
     } catch (err) {
         console.error("Actor push failed:", err);
