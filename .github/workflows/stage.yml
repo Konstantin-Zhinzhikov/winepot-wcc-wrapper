@@ -21,7 +21,7 @@ jobs:
                     APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_STAGE }}
                     AZURE_TOKEN: ${{ secrets.AZURE_TOKEN_STAGE }}
                 run: |
-                    apify secrets add azureToken "$AZURE_TOKEN" --overwrite
+                    apify secrets add azureToken "$AZURE_TOKEN"
     upload-configs:
         needs: set-apify-secrets
         uses: ./.github/workflows/upload-configs.yml
