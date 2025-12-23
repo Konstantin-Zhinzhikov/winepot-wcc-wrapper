@@ -21,9 +21,7 @@ jobs:
                     APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_PROD }}
                     AZURE_TOKEN: ${{ secrets.AZURE_TOKEN_PROD }}
                 run: |
-                    apify login -t "$APIFY_TOKEN"
                     apify secrets add azureToken "$AZURE_TOKEN"
-                    apify push
     upload-configs:
         uses: ./.github/workflows/upload-configs.yml
         with:
