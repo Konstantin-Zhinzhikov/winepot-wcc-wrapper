@@ -57,4 +57,4 @@ jobs:
                     --actor-id azure-index-actor \
                     --cron "0 5 * * 3" \
                     --config-kv winespot-main-config \
-                    --secrets '{"AZURE_TOKEN":"'"${{ secrets.AZURE_TOKEN }}"'"}'
+                    --secrets '{"azureToken":"'"${{ secrets.AZURE_TOKEN }}"'"}'
