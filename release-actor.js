@@ -10,8 +10,17 @@ const argv = yargs(hideBin(process.argv))
             "config-kv": {type: "string", describe: "Name of main config KV store", demandOption: true},
             cron: {type: "string", describe: "Cron expression", demandOption: true},
             memory: {type: "number", describe: "Memory for actor run (MB)", default: 4096},
+            "secrets": {type: "string", describe: "JSON object with secrets to set for this actor", default: "{}"},
         })
         .parse();
+
+let secrets = {};
+try {
+    secrets = JSON.parse(argv.secrets);
+} catch (err) {
+    console.error("Failed to parse --secrets JSON:", err);
+    process.exit(1);
+}
 
 const APIFY_TOKEN = process.env.APIFY_TOKEN;
 if (!APIFY_TOKEN) {
@@ -22,10 +31,17 @@ if (!APIFY_TOKEN) {
 const client = new ApifyClient({token: APIFY_TOKEN});
 
 (async () => {
+    // Сначала добавляем секрет тут.
+    // Он сохранится куда-то в "~/.apify" и будет отправлен в apify во время `apify-cli push`
+    for (const [key, value] of Object.entries(secrets)) {
+        console.log(`Setting secret ${key} for actor ${argv['actor-id']}`);
+        execSync(`npx apify-cli secrets add ${key} "${value}"`, {stdio: "inherit"});
+    }
+
     try {
         console.log(`Logging in and pushing actor ${argv['actor-id']}`);
-        execSync(`npx apify-cli login -t ${APIFY_TOKEN}`, { stdio: "inherit" });
-        execSync("npx apify-cli push", { stdio: "inherit" });
+        execSync(`npx apify-cli login -t ${APIFY_TOKEN}`, {stdio: "inherit"});
+        execSync("npx apify-cli push", {stdio: "inherit"});
         console.log("Actor successfully pushed.");
     } catch (err) {
         console.error("Actor push failed:", err);

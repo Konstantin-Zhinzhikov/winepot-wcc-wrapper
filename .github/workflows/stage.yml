@@ -7,23 +7,7 @@ on:
             - master
 
 jobs:
-    set-apify-secrets:
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/setup-node@v4
-                with:
-                    node-version: 20
-
-            -   run: npm install -g apify-cli
-
-            -   name: Set Apify secrets (STAGE)
-                env:
-                    APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_STAGE }}
-                    AZURE_TOKEN: ${{ secrets.AZURE_TOKEN_STAGE }}
-                run: |
-                    apify secrets add azureToken "$AZURE_TOKEN"
     upload-configs:
-        needs: set-apify-secrets
         uses: ./.github/workflows/upload-configs.yml
         with:
             env: stage
@@ -37,3 +21,4 @@ jobs:
             env: stage
         secrets:
             APIFY_TOKEN: ${{ secrets.APIFY_TOKEN_STAGE }}
+            AZURE_TOKEN: ${{ secrets.AZURE_TOKEN_STAGE }}
