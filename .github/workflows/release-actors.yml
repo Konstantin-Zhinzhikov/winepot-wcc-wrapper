@@ -56,5 +56,5 @@ jobs:
                   node ../release-actor.js \
                     --actor-id azure-index-actor \
                     --cron "0 5 * * 3" \
-                    --config-kv winespot-main-config
+                    --config-kv winespot-main-config \
                     --secrets '{"AZURE_TOKEN":"'"${{ secrets.AZURE_TOKEN }}"'"}'
