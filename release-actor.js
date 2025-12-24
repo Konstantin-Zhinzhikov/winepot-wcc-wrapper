@@ -35,6 +35,7 @@ const client = new ApifyClient({token: APIFY_TOKEN});
     // Он сохранится куда-то в "~/.apify" и будет отправлен в apify во время `apify-cli push`
     for (const [key, value] of Object.entries(secrets)) {
         console.log(`Setting secret ${key} for actor ${argv['actor-id']}`);
+        console.log(`npx apify-cli secrets add ${key} "${value}"`)
         execSync(`npx apify-cli secrets add ${key} "${value}"`, {stdio: "inherit"});
     }
 
